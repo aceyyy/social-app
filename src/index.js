@@ -13,8 +13,9 @@ ReactDOM.render(
 <Provider store={store}>
   <Router>
     <div>
+      <Route path="/" exact component={App}/>
       <Route path="/home" component={App}/>
-      <Route path="/login" exact component={Main}/>
+      <Route path="/login" component={Main}/>
     </div>
   </Router>
 </Provider>,

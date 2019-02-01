@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Icon, Input, Button, Col, BackTop, Layout, Alert, message } from 'antd';
+import { Form, Icon, Input, Button, Col, BackTop, Layout, message } from 'antd';
 import AuthService from "../auth/AuthService";
 import RegistrationForm from "./Registration";
 import Logo from "../../assets/logo.png";
@@ -16,7 +16,6 @@ class Main extends Component {
     super()
       this.Auth = new AuthService();
       this.state = {
-        msgerr: "",
         loading: false,
       }
   }
@@ -32,20 +31,18 @@ class Main extends Component {
 
   handleChange = (e) => {
     this.setState({ [e.target.name]: e.target.value })
-    if(e.target.value === "") {
-      this.setState({ msgerr: ""})
-    }
   }
 
   handleFormSubmit = (e) => {
     e.preventDefault();
     this.Auth.login(this.state.username, this.state.password)
       .then(res => {
+        message.success('You are successfully logged in', 3);
         this.props.history.replace('/home')
-        this.setState({ msgerr: "" })
       })
       .catch(err => {
-        this.setState({ msgerr: "Invalid username/password"})
+        message.error('Invalid username/password', 3);
+        this.props.form.resetFields();
       })
   }
 
@@ -129,9 +126,6 @@ class Main extends Component {
                 <h1>Registration</h1>
               </Col>
               <RegistrationForm/>
-              <Col align="center">
-              {this.state.msgerr ? <Alert message={this.state.msgerr} type="error" showIcon style={{width:"43%", textAlign:"left"}} /> : null }
-              </Col>
             </Col>
           </QueueAnim>
           </Col>

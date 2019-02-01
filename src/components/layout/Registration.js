@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react'
-import { Form, Input, Button, DatePicker, Col, Modal } from 'antd';
+import { Form, Input, Button, DatePicker, Col, Modal, Select, Radio, Icon } from 'antd';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createUser } from '../action';
+import _ from "lodash";
 
 class RegistrationForm extends Component {
   constructor (props) {
@@ -15,7 +16,8 @@ class RegistrationForm extends Component {
         firstname: "",
         lastname: "",
         age: "",
-        birthday: ""
+        birthday: "",
+        gender: "",
     };
   }
 
@@ -25,6 +27,14 @@ class RegistrationForm extends Component {
 
   onChangeDate = (e) => {
     this.setState({ birthday: e });
+  }
+
+  onChangeAge = (e) => {
+    this.setState({ age: e})
+  }
+
+  onChangeGender = (e) => {
+    this.setState({ gender: e.target.value })
   }
 
   handleSubmit = (e) => {
@@ -37,7 +47,8 @@ class RegistrationForm extends Component {
           firstname: this.state.firstname,
           lastname: this.state.lastname,
           age: this.state.age,
-          birthday: this.state.birthday.format('YYYY-MM-DD')
+          birthday: this.state.birthday.format('YYYY-MM-DD'),
+          gender: this.state.gender
         }
         this.props.createUser(user);
         let secondsToGo = 2;
@@ -90,13 +101,9 @@ class RegistrationForm extends Component {
     const { getFieldDecorator } = this.props.form;
 
     const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 6 },
-      },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 10, offset: 1 },
+        sm: { span: 10, offset: 5 },
       },
     };
 
@@ -108,33 +115,28 @@ class RegistrationForm extends Component {
         },
         sm: {
           span: 16,
-          offset: 7,
+          offset: 5,
         },
       },
     };
-
-    // let age = [];
-    // for (let i=8; i < 99; i++) { age.push(i); }
 
     return (
       <Col>
         <Form onSubmit={this.handleSubmit}>
           <Form.Item
             {...formItemLayout}
-            label="Username"
           >
             {getFieldDecorator('username', {
               rules: [{
                 required: true, message: 'Please input your username!',
               }],
             })(
-              <Input name="username" onChange={this.onChangeRegister}/>
+            <Input prefix={<Icon type="user" />} name="username" placeholder="Username" onChange={this.onChangeRegister}/>
             )}
           </Form.Item>
 
           <Form.Item
             {...formItemLayout}
-            label="Password"
           >
             {getFieldDecorator('password', {
               rules: [{
@@ -143,13 +145,12 @@ class RegistrationForm extends Component {
                 validator: this.validateToNextPassword,
               }],
             })(
-              <Input.Password type="password" name="password" onChange={this.onChangeRegister}/>
+              <Input.Password prefix={<Icon type="key" />} type="password" name="password" placeholder="Password" onChange={this.onChangeRegister}/>
             )}
           </Form.Item>
 
           <Form.Item
             {...formItemLayout}
-            label="Confirm Password"
           >
             {getFieldDecorator('confirm', {
               rules: [{
@@ -158,66 +159,82 @@ class RegistrationForm extends Component {
                 validator: this.compareToFirstPassword,
               }],
             })(
-              <Input.Password type="password" onBlur={this.handleConfirmBlur} />
+              <Input.Password prefix={<Icon type="key" />}  type="password" placeholder="Confirm Password" onBlur={this.handleConfirmBlur} />
             )}
           </Form.Item>
 
           <Form.Item
             {...formItemLayout}
-            label="First Name"
           >
             {getFieldDecorator('firstname', {
               rules: [{
                 required: true, message: 'Please input your firstname!',
               }],
             })(
-              <Input name="firstname" onChange={this.onChangeRegister}/>
+              <Input name="firstname" placeholder="Firstname" onChange={this.onChangeRegister}/>
             )}
           </Form.Item>
 
           <Form.Item
             {...formItemLayout}
-            label="Last Name"
           >
             {getFieldDecorator('lastname', {
               rules: [{
                 required: true, message: 'Please input your lastname!',
               }],
             })(
-              <Input name="lastname" onChange={this.onChangeRegister}/>
+              <Input name="lastname" placeholder="Lastname" onChange={this.onChangeRegister}/>
             )}
           </Form.Item>
 
           <Form.Item
             {...formItemLayout}
-            label="Age"
           >
             {getFieldDecorator('age', {
               rules: [{
                 required: true, message: 'Please select your age!',
               }],
             })(
-              <Input name="age" onChange={this.onChangeRegister}/>
+              <Select onChange={this.onChangeAge} name="age" placeholder="Age" style={{width:"43%"}}>
+                {_.range(8,66).map((i, index) => 
+                    <Select.Option value={i}>{i}</Select.Option>
+                )}
+              </Select>
+              // <Input name="age" placeholder="Age" onChange={this.onChangeRegister}/>
             )}
           </Form.Item>
 
           <Form.Item
             {...formItemLayout}
-            label="Birthday"
           >
             {getFieldDecorator('birthday', {
               rules: [{
                 required: true, message: 'Please indicate your birthday!',
               }],
             })(
-              <DatePicker onChange={this.onChangeDate} format="MMMM Do YYYY" allowClear/>
+              <DatePicker placeholder="Birthday" onChange={this.onChangeDate} format="MMMM Do YYYY" allowClear/>
+            )}
+          </Form.Item>
+
+          <Form.Item
+            {...formItemLayout}
+          >
+            {getFieldDecorator('gender', {
+              rules: [{
+                required: true, message: 'Please select your gender!',
+              }],
+            })(
+              <Radio.Group onChange={this.onChangeGender}>
+                <Radio value="Male"> <Icon type="man" /> Male </Radio>
+                <Radio value="Female"> <Icon type="woman" /> Female </Radio>
+              </Radio.Group>
             )}
           </Form.Item>
 
           <Form.Item {...tailFormItemLayout}>
             <Button htmlType="submit" type="primary" style={{width:180}}>Register</Button> 
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <Button type="danger" style={{width:180, height:"34px", background: "#ff4d4f", color: "white"}} onClick={this.handleReset}>Clear</Button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <Button type="danger" style={{width:183, height:"34px", background: "#ff4d4f", color: "white"}} onClick={this.handleReset}>Clear</Button>
           </Form.Item>
         </Form>
       </Col>
